@@ -6,7 +6,7 @@ import { ReactNode } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu } from 'lucide-react';
+import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, LogOut } from 'lucide-react';
 
 interface ShellProps {
   children: ReactNode;
@@ -60,8 +60,8 @@ export function Shell({ children, title, description, actions }: ShellProps) {
         </nav>
 
         {session?.user && (
-          <div className="border-t border-border p-4">
-            <div className="flex items-center gap-3 px-2">
+          <div className="border-t border-border p-4 flex flex-col gap-2">
+            <div className="flex items-center gap-3 px-2 py-2">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white">
                 {session.user.name?.charAt(0) || session.user.email?.charAt(0) || 'U'}
               </div>
@@ -69,6 +69,15 @@ export function Shell({ children, title, description, actions }: ShellProps) {
                 <span className="truncate text-[13px] font-medium text-white">{session.user.name || 'User'}</span>
               </div>
             </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full justify-start h-8 px-2 text-[12px] text-[#8A8F98] hover:text-white hover:bg-neutral-800/20"
+              onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+            >
+              <LogOut className="mr-2 h-3.5 w-3.5" />
+              Log out
+            </Button>
           </div>
         )}
       </aside>
