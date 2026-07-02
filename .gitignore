@@ -3,5 +3,7 @@ node_modules
 out
 *.log
 .env*
+.DS_Store
+.vscode
 
 /generated/prisma
