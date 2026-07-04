@@ -17,12 +17,10 @@ interface ShellProps {
 }
 
 const navItems = [
-  { href: '/', label: 'Tools', icon: LayoutDashboard },
-  { href: '/dashboard/discover', label: 'Discover', icon: Compass },
+  { href: '/dashboard/profile', label: 'Profile', icon: UserIcon },
   { href: '/dashboard/saved-tools', label: 'Saved Tools', icon: PenTool },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { href: '/dashboard/history', label: 'History', icon: Clock },
-  { href: '/dashboard/profile', label: 'Profile', icon: UserIcon },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -44,7 +42,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
       {/* Fixed Left Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/5 bg-background/80 backdrop-blur-2xl transition-transform duration-300 ease-in-out lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -127,7 +125,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
       {/* Main Content Area */}
       <main className="flex flex-1 flex-col lg:pl-64">
         {/* Top Header */}
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/60 px-4 backdrop-blur-2xl sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 lg:hidden">
             <Button variant="secondary" size="icon" className="shrink-0 rounded-full" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="h-4 w-4" />

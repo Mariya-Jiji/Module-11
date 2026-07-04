@@ -4,12 +4,12 @@
 
 :root {
   color-scheme: dark;
-  --background: #0B0B0C;
-  --card: #111113;
-  --border: #1C1C1F;
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --accent: #7C3AED;
+  --background: #060606;
+  --card: rgba(255, 255, 255, 0.02);
+  --border: rgba(255, 255, 255, 0.08);
+  --text-primary: #EDEDED;
+  --text-secondary: #8A8F98;
+  --accent: #FFFFFF;
 }
 
 html {

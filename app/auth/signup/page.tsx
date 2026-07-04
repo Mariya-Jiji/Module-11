@@ -51,7 +51,7 @@ function SignUpForm() {
     setError(null);
     if (provider === 'google') setIsLoadingGoogle(true);
     if (provider === 'github') setIsLoadingGithub(true);
-    signIn(provider, { callbackUrl: '/dashboard' });
+    signIn(provider, { callbackUrl: '/' });
   };
 
   if (success) {
@@ -140,10 +140,13 @@ function SignUpForm() {
 
 export default function SignUpPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0B0B0C] px-4 py-16 text-white sm:px-6">
-      <Suspense fallback={<Card title="Loading..." description="Please wait" className="w-full max-w-md" />}>
-        <SignUpForm />
-      </Suspense>
+    <main className="relative flex min-h-screen items-center justify-center bg-[#060606] px-4 py-16 text-white sm:px-6 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.04] via-[#060606] to-[#060606] opacity-80 pointer-events-none"></div>
+      <div className="relative z-10 w-full max-w-md flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+        <Suspense fallback={<Card title="Loading..." description="Please wait" className="w-full max-w-md" />}>
+          <SignUpForm />
+        </Suspense>
+      </div>
     </main>
   );
 }

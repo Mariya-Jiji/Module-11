@@ -11,8 +11,8 @@ export function Input({ className, label, error, ...props }: InputProps) {
       {label ? <span className="mb-2 block text-sm text-[#A1A1AA]">{label}</span> : null}
       <input
         className={cn(
-          'w-full rounded-2xl border border-[#1C1C1F] bg-[#111113] px-4 py-3 text-sm text-white outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20',
-          error && 'border-red-500/60',
+          'w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-[13px] text-white outline-none transition-all duration-300 focus:border-white/30 focus:bg-white/[0.04] focus:ring-4 focus:ring-white/5 shadow-inner',
+          error && 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20',
           className,
         )}
         {...props}
