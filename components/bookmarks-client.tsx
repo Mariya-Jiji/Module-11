@@ -86,7 +86,7 @@ export function BookmarksClient() {
           <h2 className="text-xl font-semibold text-white">Your Bookmarks</h2>
           <p className="text-sm text-muted-foreground">Manage and organize your saved links.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>Add Bookmark</Button>
+        <Button className="bg-black text-white hover:bg-neutral-900 border border-border" onClick={() => setIsModalOpen(true)}>Add Bookmark</Button>
       </div>
 
       {isLoading ? (
@@ -164,7 +164,7 @@ export function BookmarksClient() {
           <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
             Cancel
           </Button>
-          <Button type="submit" form="bookmark-form" disabled={createMutation.isPending}>
+          <Button className="bg-black text-white hover:bg-neutral-900 border border-border shadow-none" type="submit" form="bookmark-form" disabled={createMutation.isPending}>
             {createMutation.isPending ? 'Saving...' : 'Save bookmark'}
           </Button>
         </div>

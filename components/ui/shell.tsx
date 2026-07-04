@@ -65,7 +65,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
           </Button>
         </div>
 
-        <nav className="flex-1 space-y-[2px] px-3 py-4">
+        <nav className="flex-1 overflow-y-auto space-y-[2px] px-3 py-4">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -87,8 +87,8 @@ export function Shell({ children, title, description, actions }: ShellProps) {
           })}
         </nav>
 
-        {user && (
-          <div className="border-t border-border p-4 flex flex-col gap-2">
+        {user ? (
+          <div className="border-t border-border p-4 flex flex-col gap-2 shrink-0">
             <div className="flex items-center gap-3 px-2 py-2">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -108,6 +108,19 @@ export function Shell({ children, title, description, actions }: ShellProps) {
               Log out
             </Button>
           </div>
+        ) : (
+          <div className="border-t border-border p-4 flex flex-col gap-2 shrink-0 lg:hidden">
+             <Link href="/auth/signin" className="w-full">
+                <Button variant="ghost" size="sm" className="w-full justify-start h-8 px-2 text-[13px] font-medium text-[#A1A1AA] hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+                  Login
+                </Button>
+              </Link>
+              <Link href="/auth/signup" className="w-full">
+                <Button size="sm" variant="secondary" className="w-full h-8 rounded-full px-4 text-[13px] font-medium shadow-none" onClick={() => setIsMobileMenuOpen(false)}>
+                  Sign Up
+                </Button>
+              </Link>
+          </div>
         )}
       </aside>
 
@@ -125,7 +138,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
             </div>
           </div>
           
-          <div className="flex flex-1 items-center justify-between lg:justify-end gap-4">
+          <div className="flex flex-1 items-center justify-end gap-4">
             <div className="relative w-full max-w-md hidden lg:block">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -135,12 +148,12 @@ export function Shell({ children, title, description, actions }: ShellProps) {
               />
             </div>
             {!user && (
-              <div className="hidden lg:flex items-center gap-3">
-                <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white px-2">
                   Login
                 </Link>
                 <Link href="/auth/signup">
-                  <Button size="sm" variant="secondary" className="h-8 rounded-full px-4 text-[13px] font-medium shadow-none">
+                  <Button size="sm" variant="secondary" className="h-8 rounded-full px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium shadow-none">
                     Sign Up
                   </Button>
                 </Link>

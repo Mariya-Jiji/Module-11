@@ -107,7 +107,7 @@ export function SettingsClient({
                 type="submit" 
                 size="sm"
                 disabled={passwordMutation.isPending}
-                className="h-8 px-4 text-[12px] bg-white text-black hover:bg-neutral-200"
+                className="h-8 px-4 text-[12px] bg-black text-white hover:bg-neutral-900 border border-border shadow-none"
               >
                 {passwordMutation.isPending ? 'Updating...' : 'Update Password'}
               </Button>

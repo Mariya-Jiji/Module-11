@@ -77,7 +77,7 @@ export function ProfileClient() {
               type="submit" 
               size="sm"
               disabled={updateMutation.isPending}
-              className="h-8 px-4 text-[12px] bg-white text-black hover:bg-neutral-200 border-transparent shadow-none"
+              className="h-8 px-4 text-[12px] bg-black text-white hover:bg-neutral-900 border border-border shadow-none"
             >
               {updateMutation.isPending ? 'Saving...' : 'Save changes'}
             </Button>
