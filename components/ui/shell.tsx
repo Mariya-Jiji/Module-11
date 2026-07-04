@@ -6,7 +6,7 @@ import { ReactNode, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut } from 'lucide-react';
+import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut, User as UserIcon, PenTool } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 
 interface ShellProps {
@@ -19,8 +19,10 @@ interface ShellProps {
 const navItems = [
   { href: '/', label: 'Tools', icon: LayoutDashboard },
   { href: '/dashboard/discover', label: 'Discover', icon: Compass },
+  { href: '/dashboard/saved-tools', label: 'Saved Tools', icon: PenTool },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { href: '/dashboard/history', label: 'History', icon: Clock },
+  { href: '/dashboard/profile', label: 'Profile', icon: UserIcon },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -89,12 +91,8 @@ export function Shell({ children, title, description, actions }: ShellProps) {
           <div className="border-t border-border p-4 flex flex-col gap-2">
             <div className="flex items-center gap-3 px-2 py-2">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
-                {user.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={user.image} alt="Avatar" className="h-full w-full object-cover" />
-                ) : (
-                  user.name?.charAt(0) || user.email?.charAt(0) || 'U'
-                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(user.email || user.name || 'user')}`} alt="Avatar" className="h-full w-full object-cover" />
               </div>
               <div className="flex flex-1 flex-col overflow-hidden">
                 <span className="truncate text-[13px] font-medium text-white">{user.name || 'User'}</span>

@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { signOut } from 'next-auth/react';
 import { toast } from 'sonner';
-import { LogOut, User as UserIcon } from 'lucide-react';
-import { useUser } from '@/hooks/use-user';
+import { LogOut } from 'lucide-react';
 
 export function SettingsClient({ 
   connectedProviders = [], 
@@ -16,32 +15,9 @@ export function SettingsClient({
   connectedProviders?: string[];
   hasPassword?: boolean;
 }) {
-  const { user, update } = useUser();
-  const [name, setName] = useState(user?.name || '');
-  const [image, setImage] = useState(user?.image || '');
-  
   // Password state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ newName, newImage }: { newName: string; newImage: string }) => {
-      const res = await fetch('/api/user', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName, image: newImage }),
-      });
-      if (!res.ok) throw new Error('Failed to update profile');
-      return res.json();
-    },
-    onSuccess: async () => {
-      await update({ name, image });
-      toast.success('Profile updated successfully');
-    },
-    onError: () => {
-      toast.error('Failed to update profile');
-    },
-  });
 
   const passwordMutation = useMutation({
     mutationFn: async () => {
@@ -64,15 +40,7 @@ export function SettingsClient({
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    if (name === user?.name && image === (user?.image || '')) {
-      toast.success('Profile updated successfully');
-      return;
-    }
-    updateMutation.mutate({ newName: name, newImage: image });
-  };
+
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,64 +50,7 @@ export function SettingsClient({
 
   return (
     <div className="max-w-2xl space-y-8">
-      {/* Profile Section */}
-      <div className="rounded-lg border border-border bg-background p-6">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-800 text-xl font-medium text-white border border-border overflow-hidden">
-            {user?.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.image} alt="Avatar" className="h-full w-full object-cover" />
-            ) : (
-              user?.name?.charAt(0) || user?.email?.charAt(0) || <UserIcon className="h-6 w-6 text-muted-foreground" />
-            )}
-          </div>
-          <div>
-            <h2 className="text-[15px] font-medium text-white">{user?.name || 'User'}</h2>
-            <p className="text-[13px] text-[#8A8F98]">{user?.email}</p>
-          </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-[13px] font-medium text-white">
-              Display Name
-            </label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="max-w-md h-9 text-[13px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-neutral-700"
-              placeholder="Enter your name"
-            />
-            <p className="text-[12px] text-[#8A8F98]">This is your public display name.</p>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="image" className="text-[13px] font-medium text-white">
-              Avatar URL
-            </label>
-            <Input
-              id="image"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              className="max-w-md h-9 text-[13px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-neutral-700"
-              placeholder="https://example.com/avatar.jpg"
-            />
-            <p className="text-[12px] text-[#8A8F98]">A direct link to an image to use as your avatar.</p>
-          </div>
-
-          <div className="flex items-center gap-3 pt-4 border-t border-border">
-            <Button 
-              type="submit" 
-              size="sm"
-              disabled={updateMutation.isPending}
-              className="h-8 px-4 text-[12px] bg-black text-white hover:bg-neutral-900 border border-border shadow-none"
-            >
-              {updateMutation.isPending ? 'Saving...' : 'Save profile changes'}
-            </Button>
-          </div>
-        </form>
-      </div>
 
       {/* Connected Accounts Section */}
       {connectedProviders.length > 0 && (

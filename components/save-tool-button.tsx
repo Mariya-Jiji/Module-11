@@ -5,44 +5,45 @@ import { Button } from '@/components/ui/button';
 import { BookmarkPlus, BookmarkCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface Bookmark {
+interface SavedTool {
   id: string;
-  url: string;
+  toolId: string;
 }
 
-export function SaveToolButton({ tool }: { tool: { name: string; url: string } }) {
+export function SaveToolButton({ tool }: { tool: { id: string; name: string; category: string } }) {
   const queryClient = useQueryClient();
 
-  // Fetch Bookmarks (shared cache with BookmarksClient)
-  const { data: bookmarks = [] } = useQuery<Bookmark[]>({
-    queryKey: ['bookmarks'],
+  // Fetch Saved Tools
+  const { data: savedTools = [] } = useQuery<SavedTool[]>({
+    queryKey: ['saved-tools'],
     queryFn: async () => {
-      const res = await fetch('/api/bookmarks');
+      const res = await fetch('/api/user/saved-tools');
       if (!res.ok) throw new Error('Failed to fetch');
-      return res.json();
+      const data = await res.json();
+      return data.savedTools || [];
     },
   });
 
-  const existingBookmark = bookmarks.find((b) => b.url === tool.url);
-  const isSaved = !!existingBookmark;
+  const existingTool = savedTools.find((t) => t.toolId === tool.id);
+  const isSaved = !!existingTool;
 
   const toggleMutation = useMutation({
     mutationFn: async () => {
       if (isSaved) {
-        const res = await fetch(`/api/bookmarks/${existingBookmark.id}`, { method: 'DELETE' });
+        const res = await fetch(`/api/user/saved-tools/${existingTool.id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Failed to unsave');
       } else {
-        const res = await fetch('/api/bookmarks', {
+        const res = await fetch('/api/user/saved-tools', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: tool.name, url: tool.url }),
+          body: JSON.stringify({ toolId: tool.id, name: tool.name, category: tool.category }),
         });
         if (!res.ok) throw new Error('Failed to save');
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
-      toast.success(isSaved ? 'Tool removed from bookmarks' : 'Tool saved to bookmarks');
+      queryClient.invalidateQueries({ queryKey: ['saved-tools'] });
+      toast.success(isSaved ? 'Tool removed from saved list' : 'Tool saved successfully');
     },
     onError: () => {
       toast.error('Something went wrong');
