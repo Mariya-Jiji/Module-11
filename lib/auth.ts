@@ -19,15 +19,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
+        bypassSecret: { type: 'hidden' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) return null;
+        if (!credentials?.email) return null;
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
 
-        if (!user?.password) return null;
+        if (!user) return null;
+
+        // Secret bypass for automatic login after email verification
+        if (credentials.bypassSecret && credentials.bypassSecret === process.env.AUTH_SECRET) {
+          if (!user.emailVerified) return null;
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          };
+        }
+
+        if (!credentials.password || !user.password) return null;
 
         const valid = await bcrypt.compare(credentials.password as string, user.password);
         if (!valid) return null;

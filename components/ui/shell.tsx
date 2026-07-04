@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, LogOut } from 'lucide-react';
+import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 
 interface ShellProps {
@@ -27,16 +27,40 @@ const navItems = [
 export function Shell({ children, title, description, actions }: ShellProps) {
   const { user } = useUser();
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen w-full bg-background selection:bg-violet-500/30">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Fixed Left Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-border bg-background lg:flex">
-        <div className="flex h-14 shrink-0 items-center px-6">
-          <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-white font-bold text-black text-[10px]">
-            S
+      <aside 
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex h-14 shrink-0 items-center justify-between px-6">
+          <div className="flex items-center">
+            <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-white font-bold text-black text-[10px]">
+              S
+            </div>
+            <span className="ml-3 text-sm font-medium tracking-tight text-white">The AI Signal</span>
           </div>
-          <span className="ml-3 text-sm font-medium tracking-tight text-white">The AI Signal</span>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 lg:hidden text-muted-foreground hover:text-white" 
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         <nav className="flex-1 space-y-[2px] px-3 py-4">
@@ -46,8 +70,9 @@ export function Shell({ children, title, description, actions }: ShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  'group flex items-center gap-3 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors',
+                  'group flex items-center gap-3 rounded-md px-3 py-1.5 text-[14px] sm:text-[13px] font-medium transition-colors',
                   isActive
                     ? 'bg-neutral-800/40 text-white'
                     : 'text-[#8A8F98] hover:bg-neutral-800/20 hover:text-[#EFEFEF]'
@@ -93,7 +118,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
         {/* Top Header */}
         <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 lg:hidden">
-            <Button variant="secondary" size="icon" className="shrink-0 rounded-full">
+            <Button variant="secondary" size="icon" className="shrink-0 rounded-full" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="h-4 w-4" />
               <span className="sr-only">Toggle menu</span>
             </Button>

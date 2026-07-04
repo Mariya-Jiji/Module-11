@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { hashToken } from '@/lib/tokens';
+import { signIn } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
@@ -16,6 +17,8 @@ export default async function VerifyEmailPage({
   if (!token || !email) {
     return <VerificationResult success={false} message="Missing or invalid verification link." />;
   }
+
+  let success = false;
 
   try {
     const identifier = `verify:${email}`;
@@ -56,11 +59,23 @@ export default async function VerifyEmailPage({
       }),
     ]);
 
-    return <VerificationResult success={true} message="Your email has been verified! You can now sign in." />;
+    success = true;
   } catch (error) {
     console.error('Verification error:', error);
     return <VerificationResult success={false} message="An unexpected error occurred during verification." />;
   }
+
+  if (success) {
+    // Automatically sign the user in and redirect to the tools dashboard
+    await signIn('credentials', {
+      email,
+      bypassSecret: process.env.AUTH_SECRET,
+      redirectTo: '/',
+    });
+  }
+
+  // Fallback message just in case the redirect is slightly delayed
+  return <VerificationResult success={true} message="Your email has been verified! Redirecting..." />;
 }
 
 function VerificationResult({ success, message }: { success: boolean; message: string }) {

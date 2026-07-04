@@ -68,27 +68,27 @@ export default async function HomePage() {
         </div>
       }
     >
-      <div className="flex flex-col border-t border-border mt-4">
+      <div className="flex flex-col border-t border-border mt-4 sm:mt-6">
         {displayTools.map((tool) => (
           <div 
             key={tool.id} 
-            className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border py-4 px-2 transition-colors hover:bg-neutral-800/20"
+            className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border py-5 px-2 transition-colors hover:bg-neutral-800/20"
           >
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-3">
-                <h3 className="text-[14px] font-medium text-white">{tool.name}</h3>
-                <Badge variant="secondary" className="text-[10px] bg-transparent border-border text-[#8A8F98] group-hover:text-[#EFEFEF] transition-colors">{tool.category}</Badge>
+            <div className="flex-1 space-y-2 sm:space-y-1 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <h3 className="text-base sm:text-[14px] font-medium text-white">{tool.name}</h3>
+                <Badge variant="secondary" className="w-fit text-[11px] sm:text-[10px] bg-transparent border-border text-[#8A8F98] group-hover:text-[#EFEFEF] transition-colors px-2 py-0.5">{tool.category}</Badge>
               </div>
               
-              <p className="text-[13px] text-[#8A8F98] line-clamp-1 max-w-3xl pr-4">
+              <p className="text-sm sm:text-[13px] text-[#8A8F98] line-clamp-3 sm:line-clamp-1 max-w-3xl pr-0 sm:pr-4">
                 {tool.description}
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex flex-wrap items-center gap-2">
                 {tool.tags.split(',').slice(0, 2).map((tag) => (
-                  <span key={tag} className="text-[11px] text-[#636871]">
+                  <span key={tag} className="text-xs sm:text-[11px] text-[#636871] bg-neutral-900/50 sm:bg-transparent px-2 py-1 sm:p-0 rounded-md sm:rounded-none">
                     {tag.trim()}
                   </span>
                 ))}
