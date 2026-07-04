@@ -3,26 +3,36 @@ import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Shell } from '@/components/ui/shell';
+import { prisma } from '@/lib/prisma';
+import { formatDistanceToNow } from 'date-fns';
 
 export default async function HistoryPage() {
   const session = await auth();
   if (!session?.user) redirect('/auth/signin');
 
-  const items: Array<{ action: string; entity: string; createdAt: string }> = [];
+  const history = await prisma.history.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  });
 
   return (
     <Shell title="History" description="A timeline of your recent activity." actions={null}>
-      {items.length === 0 ? (
+      {history.length === 0 ? (
         <EmptyState title="No recent activity" description="Your history will appear here as you start interacting with the app." />
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
-            <Card key={`${item.action}-${item.entity}`} className="flex items-center justify-between">
+          {history.map((item) => (
+            <Card key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 border border-border bg-background">
               <div>
-                <p className="font-semibold text-white">{item.action}</p>
-                <p className="text-sm text-[#A1A1AA]">{item.entity}</p>
+                <p className="font-medium text-white text-[14px]">
+                  {item.action === 'CLICK_TOOL' ? 'Visited tool' : item.action}
+                </p>
+                <p className="text-[13px] text-[#8A8F98]">{item.entity}</p>
               </div>
-              <p className="text-sm text-[#A1A1AA]">{item.createdAt}</p>
+              <p className="text-[12px] text-[#636871] whitespace-nowrap">
+                {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+              </p>
             </Card>
           ))}
         </div>

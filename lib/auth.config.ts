@@ -29,9 +29,14 @@ export const authConfig = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
+      }
+      // Listen for the update() function from the client to refresh the session locally
+      if (trigger === 'update' && session) {
+        if (session.name) token.name = session.name;
+        if (session.image) token.picture = session.image;
       }
       return token;
     },

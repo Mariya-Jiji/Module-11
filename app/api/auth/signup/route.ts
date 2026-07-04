@@ -1,50 +1,58 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { generateVerificationToken, hashToken } from '@/lib/tokens';
+import { sendVerificationLinkEmail } from '@/lib/mailer';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name, otp } = await request.json();
+    const { email, password, name } = await request.json();
 
-    if (!email || !password || !otp) {
-      return NextResponse.json({ error: 'Email, password, and OTP are required.' }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    // 1. Validate OTP
-    const verificationToken = await prisma.verificationToken.findUnique({
-      where: { identifier_token: { identifier: email, token: otp } },
-    });
-
-    if (!verificationToken) {
-      return NextResponse.json({ error: 'Invalid or incorrect OTP.' }, { status: 400 });
-    }
-
-    if (new Date() > verificationToken.expires) {
-      await prisma.verificationToken.delete({ where: { token: otp } });
-      return NextResponse.json({ error: 'OTP has expired. Please request a new one.' }, { status: 400 });
-    }
-
-    // 2. Ensure user doesn't already exist
+    // 1. Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: 'User already exists.' }, { status: 409 });
+      return NextResponse.json({ error: 'Email is already in use.' }, { status: 409 });
     }
 
-    // 3. Create User with verified email
+    // 2. Hash password and create user with emailVerified = null
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
       data: {
         email,
         name: name || email,
         password: hashedPassword,
-        emailVerified: new Date(), // Pre-verified!
+        emailVerified: null, // explicit null
       },
     });
 
-    // 4. Clean up token
-    await prisma.verificationToken.delete({ where: { token: otp } });
+    // 3. Generate raw token, hash it, and store it
+    const rawToken = generateVerificationToken();
+    const hashedToken = hashToken(rawToken);
+    const identifier = `verify:${email}`;
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    return NextResponse.json({ user: { id: user.id, email: user.email, name: user.name } }, { status: 201 });
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({ where: { identifier } }),
+      prisma.verificationToken.create({
+        data: {
+          identifier,
+          token: hashedToken,
+          expires,
+        },
+      }),
+    ]);
+
+    // 4. Send email with raw token
+    await sendVerificationLinkEmail(email, rawToken);
+
+    return NextResponse.json(
+      { success: true, message: 'Verification email sent.' },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json({ error: 'Failed to create account.' }, { status: 500 });

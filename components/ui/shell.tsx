@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, LogOut } from 'lucide-react';
+import { useUser } from '@/hooks/use-user';
 
 interface ShellProps {
   children: ReactNode;
@@ -24,7 +25,7 @@ const navItems = [
 ];
 
 export function Shell({ children, title, description, actions }: ShellProps) {
-  const { data: session } = useSession();
+  const { user } = useUser();
   const pathname = usePathname();
 
   return (
@@ -59,14 +60,18 @@ export function Shell({ children, title, description, actions }: ShellProps) {
           })}
         </nav>
 
-        {session?.user && (
+        {user && (
           <div className="border-t border-border p-4 flex flex-col gap-2">
             <div className="flex items-center gap-3 px-2 py-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white">
-                {session.user.name?.charAt(0) || session.user.email?.charAt(0) || 'U'}
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
+                {user.image ? (
+                  <img src={user.image} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  user.name?.charAt(0) || user.email?.charAt(0) || 'U'
+                )}
               </div>
               <div className="flex flex-1 flex-col overflow-hidden">
-                <span className="truncate text-[13px] font-medium text-white">{session.user.name || 'User'}</span>
+                <span className="truncate text-[13px] font-medium text-white">{user.name || 'User'}</span>
               </div>
             </div>
             <Button 

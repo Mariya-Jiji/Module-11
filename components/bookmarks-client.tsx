@@ -17,6 +17,8 @@ interface Bookmark {
   createdAt: string;
 }
 
+import { Skeleton } from '@/components/ui/skeleton';
+
 export function BookmarksClient() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,7 +90,17 @@ export function BookmarksClient() {
       </div>
 
       {isLoading ? (
-        <div className="text-muted-foreground text-[13px]">Loading bookmarks...</div>
+        <div className="flex flex-col border-t border-border mt-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center justify-between gap-4 border-b border-border py-4 px-2">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-[150px]" />
+                <Skeleton className="h-3 w-[250px]" />
+              </div>
+              <Skeleton className="h-7 w-20" />
+            </div>
+          ))}
+        </div>
       ) : bookmarks.length === 0 ? (
         <EmptyState
           title="No bookmarks yet"

@@ -10,7 +10,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { name } = body;
+    const { name, image } = body;
 
     if (!name || typeof name !== 'string') {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
@@ -18,7 +18,10 @@ export async function PATCH(req: Request) {
 
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
-      data: { name },
+      data: { 
+        name,
+        ...(image && typeof image === 'string' && { image })
+      },
     });
 
     return NextResponse.json({ user: updatedUser });

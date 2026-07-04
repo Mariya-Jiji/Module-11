@@ -3,7 +3,9 @@ import { redirect } from 'next/navigation';
 import { Shell } from '@/components/ui/shell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookmarkPlus, ExternalLink } from 'lucide-react';
+import { SaveToolButton } from '@/components/save-tool-button';
+import { TrackToolLink } from '@/components/track-tool-link';
+import { ExternalLink } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
 export default async function ToolsPage() {
@@ -95,13 +97,8 @@ export default async function ToolsPage() {
                 ))}
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-[12px] text-[#8A8F98] hover:text-white hover:bg-neutral-800/50">
-                  <BookmarkPlus className="mr-1.5 h-3.5 w-3.5" />
-                  Save
-                </Button>
-                <a href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center h-7 w-7 p-0 text-[#8A8F98] hover:text-white hover:bg-neutral-800/50 rounded-full transition-colors">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+                <SaveToolButton tool={tool} />
+                <TrackToolLink toolId={tool.id} toolName={tool.name} url={tool.url} />
               </div>
             </div>
           </div>
