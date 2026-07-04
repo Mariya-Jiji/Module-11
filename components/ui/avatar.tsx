@@ -25,6 +25,7 @@ export function Avatar({ name, src, size = 'md', className, ...props }: AvatarPr
       className={cn('flex items-center justify-center overflow-hidden rounded-full border border-[#1C1C1F] bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white', sizes[size], className)}
       {...props}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       {src ? <img src={src} alt={name} className="h-full w-full object-cover" /> : initials}
     </div>
   );

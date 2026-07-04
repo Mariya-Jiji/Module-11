@@ -65,6 +65,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
             <div className="flex items-center gap-3 px-2 py-2">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
                 {user.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={user.image} alt="Avatar" className="h-full w-full object-cover" />
                 ) : (
                   user.name?.charAt(0) || user.email?.charAt(0) || 'U'

@@ -87,6 +87,7 @@ export function SettingsClient({
         <div className="flex items-center gap-4 mb-8">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-800 text-xl font-medium text-white border border-border overflow-hidden">
             {user?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={user.image} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
               user?.name?.charAt(0) || user?.email?.charAt(0) || <UserIcon className="h-6 w-6 text-muted-foreground" />
