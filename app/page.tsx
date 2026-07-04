@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function HomePage() {
+import { auth } from '@/lib/auth';
+
+export default async function HomePage() {
+  const session = await auth();
+  
   return (
     <div className="flex min-h-screen flex-col bg-[#0B0B0C] text-white selection:bg-violet-500/30">
       {/* Navigation Bar */}
@@ -16,14 +20,20 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
-              Log in
-            </Link>
-          
-            <Link href="/auth/signup" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
-              Sign up
-            </Link>
-          
+            {session?.user ? (
+              <Link href="/dashboard" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
+                  Login
+                </Link>
+                <Link href="/auth/signup" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
