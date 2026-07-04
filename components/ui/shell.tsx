@@ -17,7 +17,7 @@ interface ShellProps {
 }
 
 const navItems = [
-  { href: '/dashboard/tools', label: 'Tools', icon: LayoutDashboard },
+  { href: '/', label: 'Tools', icon: LayoutDashboard },
   { href: '/dashboard/discover', label: 'Discover', icon: Compass },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { href: '/dashboard/history', label: 'History', icon: Clock },
@@ -111,7 +111,18 @@ export function Shell({ children, title, description, actions }: ShellProps) {
                 className="h-9 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm text-white placeholder:text-muted-foreground focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
               />
             </div>
-            {/* Theme Toggle could go here later */}
+            {!user && (
+              <div className="hidden lg:flex items-center gap-3">
+                <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white">
+                  Login
+                </Link>
+                <Link href="/auth/signup">
+                  <Button size="sm" variant="secondary" className="h-8 rounded-full px-4 text-[13px] font-medium shadow-none">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </header>
 
