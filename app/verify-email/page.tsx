@@ -78,11 +78,9 @@ function VerificationResult({ success, message }: { success: boolean; message: s
             <XCircle className="h-16 w-16 text-red-500" />
           )}
           
-          <Button asChild className="w-full mt-4">
-            <Link href="/auth/signin">
-              Return to Sign In
-            </Link>
-          </Button>
+          <Link href="/auth/signin" className="w-full mt-4 block">
+            <Button className="w-full">Return to Sign In</Button>
+          </Link>
         </div>
       </Card>
     </main>

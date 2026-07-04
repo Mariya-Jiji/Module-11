@@ -41,9 +41,9 @@ export default function ForgotPasswordPage() {
         <Card title="Check your email" description="If an account exists, a reset link was sent." className="w-full max-w-md text-center">
           <div className="flex flex-col items-center justify-center space-y-4 py-4">
             <MailCheck className="h-16 w-16 text-violet-500" />
-            <Button asChild className="w-full mt-4">
-              <Link href="/auth/signin">Return to Sign In</Link>
-            </Button>
+            <Link href="/auth/signin" className="w-full mt-4 block">
+              <Button className="w-full">Return to Sign In</Button>
+            </Link>
           </div>
         </Card>
       </main>
