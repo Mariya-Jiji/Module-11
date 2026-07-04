@@ -42,7 +42,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
       {/* Fixed Left Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/5 bg-background/80 backdrop-blur-2xl transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/[0.08] bg-black transition-transform duration-200 ease-in-out lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -72,10 +72,10 @@ export function Shell({ children, title, description, actions }: ShellProps) {
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  'group flex items-center gap-3 rounded-md px-3 py-1.5 text-[14px] sm:text-[13px] font-medium transition-colors',
+                  'group flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] font-medium transition-all duration-200 ease',
                   isActive
-                    ? 'bg-neutral-800/40 text-white'
-                    : 'text-[#8A8F98] hover:bg-neutral-800/20 hover:text-[#EFEFEF]'
+                    ? 'bg-white/[0.06] text-white'
+                    : 'text-white/60 hover:bg-white/[0.03] hover:text-white'
                 )}
               >
                 <item.icon className={cn("h-4 w-4 transition-colors", isActive ? "text-white" : "text-[#8A8F98] group-hover:text-[#EFEFEF]")} />
@@ -125,7 +125,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
       {/* Main Content Area */}
       <main className="flex flex-1 flex-col lg:pl-64">
         {/* Top Header */}
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/60 px-4 backdrop-blur-2xl sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] bg-black/70 px-6 backdrop-blur-md">
           <div className="flex items-center gap-4 lg:hidden">
             <Button variant="secondary" size="icon" className="shrink-0 rounded-full" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="h-4 w-4" />
@@ -161,7 +161,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <div className="flex-1 p-6 sm:p-8 lg:p-10 max-w-[1100px] mx-auto w-full animate-fade-in-up">
           {(title || description || actions) && (
             <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div>

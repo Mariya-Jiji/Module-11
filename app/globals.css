@@ -4,11 +4,11 @@
 
 :root {
   color-scheme: dark;
-  --background: #060606;
+  --background: #000000;
   --card: rgba(255, 255, 255, 0.02);
   --border: rgba(255, 255, 255, 0.08);
-  --text-primary: #EDEDED;
-  --text-secondary: #8A8F98;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.7);
   --accent: #FFFFFF;
 }
 
@@ -28,6 +28,21 @@ body {
 }
 
 ::selection {
-  background: rgba(124, 58, 237, 0.35);
+  background: rgba(120, 120, 255, 0.25);
   color: white;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

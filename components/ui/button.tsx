@@ -15,12 +15,12 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const base = 'inline-flex items-center justify-center rounded-xl border font-medium transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#060606] disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]';
+  const base = 'inline-flex items-center justify-center rounded-xl border font-medium transition-all duration-200 ease focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50';
 
   const variants: Record<ButtonVariant, string> = {
-    primary: 'border-white/20 bg-black text-white shadow-[0_1px_2px_rgba(255,255,255,0.1)_inset] hover:bg-[#111111] hover:border-white/30',
-    secondary: 'border-white/5 bg-black text-[#A1A1AA] hover:text-white hover:bg-[#111111] hover:border-white/10',
-    ghost: 'border-transparent bg-transparent text-[#A1A1AA] hover:bg-black hover:text-white',
+    primary: 'border-white/[0.12] bg-black text-white hover:scale-[1.03] hover:border-white/[0.25] hover:shadow-[0_0_20px_rgba(120,120,255,0.2)]',
+    secondary: 'border-white/[0.08] bg-black text-white/70 hover:text-white hover:scale-[1.02] hover:border-white/[0.2] hover:shadow-[0_0_20px_rgba(120,120,255,0.15)]',
+    ghost: 'border-transparent bg-transparent text-white/70 hover:scale-[1.02] hover:text-white',
   };
 
   const sizes: Record<ButtonSize, string> = {

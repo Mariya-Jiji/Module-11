@@ -10,15 +10,15 @@ export function Card({ className, title, description, footer, children, ...props
   return (
     <div
       className={cn(
-        'rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 shadow-xl backdrop-blur-xl transition-all duration-300 ease-out hover:border-white/[0.12] hover:bg-white/[0.03]', 
+        'rounded-[16px] border border-white/[0.08] bg-white/[0.03] p-6 transition-all duration-200 ease hover:-translate-y-1 hover:border-white/[0.2]', 
         className
       )}
       {...props}
     >
       {(title || description) && (
         <div className="mb-5">
-          {title ? <h3 className="text-[15px] font-medium text-white">{title}</h3> : null}
-          {description ? <p className="mt-1.5 text-[13px] text-[#8A8F98] leading-relaxed">{description}</p> : null}
+          {title ? <h3 className="text-xl font-bold text-white tracking-tight">{title}</h3> : null}
+          {description ? <p className="mt-2 text-[15px] text-white/70 leading-relaxed">{description}</p> : null}
         </div>
       )}
       {children}
