@@ -1,12 +1,10 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.resend.com',
-  port: 465,
-  secure: true,
+  service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // Will be "resend"
-    pass: process.env.EMAIL_PASS, // Will be your "re_..." key
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -19,10 +17,8 @@ const getBaseUrl = () => {
 export async function sendVerificationLinkEmail(email: string, token: string) {
   const confirmLink = `${getBaseUrl()}/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
 
-  const senderEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-
   const mailOptions = {
-    from: `"The AI Signal" <${senderEmail}>`,
+    from: `"The AI Signal" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: 'Verify your email - The AI Signal',
     html: `
@@ -55,10 +51,8 @@ export async function sendVerificationLinkEmail(email: string, token: string) {
 export async function sendPasswordResetEmail(email: string, token: string) {
   const resetLink = `${getBaseUrl()}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
-  const senderEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-
   const mailOptions = {
-    from: `"The AI Signal" <${senderEmail}>`,
+    from: `"The AI Signal" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: 'Reset your password - The AI Signal',
     html: `
