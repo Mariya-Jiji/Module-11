@@ -1,103 +1,65 @@
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { hashToken } from '@/lib/tokens';
-import { signIn } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import Link from 'next/link';
-import { CheckCircle2, XCircle } from 'lucide-react';
+'use client';
 
-export default async function VerifyEmailPage({
+import { useEffect, useState, useRef } from 'react';
+import { verifyEmailAction } from './actions';
+import { Card } from '@/components/ui/card';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
+export default function VerifyEmailPage({
   searchParams,
 }: {
   searchParams: { token?: string; email?: string };
 }) {
-  const { token, email } = searchParams;
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [message, setMessage] = useState('Verifying your email...');
+  const initialized = useRef(false);
 
-  if (!token || !email) {
-    return <VerificationResult success={false} message="Missing or invalid verification link." />;
-  }
-
-  let success = false;
-
-  try {
-    const identifier = `verify:${email}`;
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     
-    // Hash incoming token to match with DB storage
-    const hashedToken = hashToken(token);
-
-    // Look up the token in the database
-    const verificationToken = await prisma.verificationToken.findUnique({
-      where: {
-        identifier_token: {
-          identifier,
-          token: hashedToken,
-        },
-      },
-    });
-
-    if (!verificationToken) {
-      return <VerificationResult success={false} message="Invalid verification link. It may have already been used." />;
+    if (!searchParams.token || !searchParams.email) {
+      setStatus('error');
+      setMessage('Missing or invalid verification link.');
+      return;
     }
 
-    if (new Date() > verificationToken.expires) {
-      // Token is expired, delete it
-      await prisma.verificationToken.delete({
-        where: { identifier_token: { identifier, token: hashedToken } },
+    verifyEmailAction(searchParams.token, searchParams.email)
+      .then((res) => {
+         if (res?.error) {
+            setStatus('error');
+            setMessage(res.error);
+         }
+      })
+      .catch(() => {
+         setStatus('error');
+         setMessage('An unexpected error occurred.');
       });
-      return <VerificationResult success={false} message="This verification link has expired. Please request a new one." />;
-    }
+  }, [searchParams]);
 
-    // Token is valid and not expired! Update the user.
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { email },
-        data: { emailVerified: new Date() },
-      }),
-      prisma.verificationToken.delete({
-        where: { identifier_token: { identifier, token: hashedToken } },
-      }),
-    ]);
-
-    success = true;
-  } catch (error) {
-    console.error('Verification error:', error);
-    return <VerificationResult success={false} message="An unexpected error occurred during verification." />;
-  }
-
-  if (success) {
-    // Automatically sign the user in and redirect to the tools dashboard
-    await signIn('credentials', {
-      email,
-      bypassSecret: process.env.AUTH_SECRET,
-      redirectTo: '/',
-    });
-  }
-
-  // Fallback message just in case the redirect is slightly delayed
-  return <VerificationResult success={true} message="Your email has been verified! Redirecting..." />;
-}
-
-function VerificationResult({ success, message }: { success: boolean; message: string }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0B0B0C] px-4 py-16 text-white sm:px-6">
-      <Card 
-        title={success ? "Email Verified" : "Verification Failed"}
-        description={message}
-        className="w-full max-w-md text-center"
-      >
-        <div className="flex flex-col items-center justify-center space-y-6">
-          {success ? (
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
-          ) : (
-            <XCircle className="h-16 w-16 text-red-500" />
-          )}
-          
-          <Link href="/auth/signin" className="w-full mt-4 block">
-            <Button className="w-full">Return to Sign In</Button>
-          </Link>
-        </div>
-      </Card>
+    <main className="flex min-h-screen items-center justify-center bg-black px-4 py-16 text-white sm:px-6">
+      <div className="w-full max-w-md animate-fade-in-up">
+        <Card 
+          title={status === 'loading' ? 'Verifying...' : status === 'success' ? 'Email Verified' : 'Verification Failed'}
+          description={message}
+          className="w-full max-w-md text-center"
+        >
+          <div className="flex flex-col items-center justify-center space-y-6">
+            {status === 'loading' && <Loader2 className="h-16 w-16 text-white animate-spin" />}
+            {status === 'success' && <CheckCircle2 className="h-16 w-16 text-green-500" />}
+            {status === 'error' && <XCircle className="h-16 w-16 text-red-500" />}
+            
+            {status === 'error' && (
+              <Link href="/auth/signin" className="w-full mt-4 block">
+                <Button className="w-full">Return to Sign In</Button>
+              </Link>
+            )}
+          </div>
+        </Card>
+      </div>
     </main>
   );
 }
