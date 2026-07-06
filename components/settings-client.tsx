@@ -40,12 +40,34 @@ export function SettingsClient({
     },
   });
 
-
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/user', {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete account');
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Account deleted successfully');
+      signOut({ callbackUrl: '/' });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPassword || !newPassword) return;
     passwordMutation.mutate();
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm('Are you absolutely sure you want to delete your account? This action cannot be undone and all data will be permanently lost.')) {
+      deleteMutation.mutate();
+    }
   };
 
   return (
@@ -117,8 +139,8 @@ export function SettingsClient({
       )}
 
       {/* Account Access (Logout) */}
-      <div className="rounded-lg border border-red-900/30 bg-red-900/5 p-6">
-        <h3 className="text-[14px] font-medium text-red-400">Account Access</h3>
+      <div className="rounded-lg border border-border bg-background p-6">
+        <h3 className="text-[14px] font-medium text-white">Account Access</h3>
         <p className="mt-1 text-[13px] text-[#8A8F98] mb-4">Log out of your current session on this device.</p>
         <Button 
           variant="secondary"
@@ -128,6 +150,21 @@ export function SettingsClient({
         >
           <LogOut className="mr-2 h-3.5 w-3.5" />
           Log out
+        </Button>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="rounded-lg border border-red-900/30 bg-red-900/5 p-6">
+        <h3 className="text-[14px] font-medium text-red-400">Danger Zone</h3>
+        <p className="mt-1 text-[13px] text-[#8A8F98] mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+        <Button 
+          variant="secondary"
+          size="sm"
+          onClick={handleDeleteAccount}
+          disabled={deleteMutation.isPending}
+          className="h-8 px-4 text-[12px] text-red-400 bg-red-400/10 hover:bg-red-400/20 hover:text-red-300 border-transparent transition-colors"
+        >
+          {deleteMutation.isPending ? 'Deleting...' : 'Delete Account'}
         </Button>
       </div>
     </div>

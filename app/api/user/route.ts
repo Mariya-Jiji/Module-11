@@ -30,3 +30,21 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await prisma.user.delete({
+      where: { id: session.user.id },
+    });
+
+    return NextResponse.json({ success: true, message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    return NextResponse.json({ error: 'Failed to delete account' }, { status: 500 });
+  }
+}
