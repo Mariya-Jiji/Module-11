@@ -67,7 +67,7 @@ function SignUpForm() {
             Please click the link in the email to verify your account. Once verified, you can sign in.
           </p>
           <p className="text-xs text-[#a1a1aa] italic">
-            Check your spam folder if you didn't receive the verification link.
+            Check your spam folder if you didn&apos;t receive the verification link.
           </p>
           <Button onClick={() => router.push('/auth/signin')} className="w-full mt-4">
             Go to Sign In
