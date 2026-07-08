@@ -168,18 +168,6 @@ export function Shell({ children, title, description, actions }: ShellProps) {
           </div>
           
           <div className="flex flex-1 items-center justify-start lg:justify-end gap-4">
-            <div className="relative w-full max-w-sm hidden lg:block group">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8A8F98] group-focus-within:text-[#5e6ad2] transition-colors" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="h-7 w-full rounded-md border border-white/[0.06] bg-[#161618] pl-8 pr-3 text-[13px] text-white placeholder:text-[#8A8F98] focus:border-[#5e6ad2]/50 focus:bg-[#1a1a1c] focus:outline-none focus:ring-1 focus:ring-[#5e6ad2]/30 transition-all shadow-sm"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                <kbd className="inline-flex h-4 items-center gap-1 rounded bg-white/[0.05] px-1.5 font-mono text-[9px] font-medium text-[#8A8F98]">⌘</kbd>
-                <kbd className="inline-flex h-4 items-center gap-1 rounded bg-white/[0.05] px-1.5 font-mono text-[9px] font-medium text-[#8A8F98]">K</kbd>
-              </div>
-            </div>
             {!user && (
               <div className="flex items-center gap-2">
                 <Link href="/auth/signin" className="text-[13px] font-medium text-[#A1A1AA] transition-colors hover:text-white px-2 py-1 rounded-md hover:bg-white/[0.04]">
