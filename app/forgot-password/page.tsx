@@ -40,7 +40,10 @@ export default function ForgotPasswordPage() {
       <main className="flex min-h-screen items-center justify-center bg-[#0B0B0C] px-4 py-16 text-white sm:px-6">
         <Card title="Check your email" description="If an account exists, a reset link was sent." className="w-full max-w-md text-center">
           <div className="flex flex-col items-center justify-center space-y-4 py-4">
-            <MailCheck className="h-16 w-16 text-violet-500" />
+            <MailCheck className="h-16 w-16 text-[#5e6ad2]" />
+            <p className="text-xs text-[#a1a1aa] italic">
+              Check your spam folder if you didn&apos;t receive the reset link.
+            </p>
             <Link href="/auth/signin" className="w-full mt-4 block">
               <Button className="w-full">Return to Sign In</Button>
             </Link>

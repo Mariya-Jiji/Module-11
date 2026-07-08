@@ -148,7 +148,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
                 </Button>
               </Link>
               <Link href="/auth/signup" className="w-full">
-                <Button size="sm" className="w-full h-8 rounded-md px-4 text-[13px] font-medium bg-[#5e6ad2] hover:bg-[#5e6ad2]/90 text-white shadow-none" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start h-8 rounded-md px-2 text-[13px] font-medium text-[#A1A1AA] hover:text-white hover:bg-white/[0.04]" onClick={() => setIsMobileMenuOpen(false)}>
                   Sign Up
                 </Button>
               </Link>
@@ -173,10 +173,8 @@ export function Shell({ children, title, description, actions }: ShellProps) {
                 <Link href="/auth/signin" className="text-[13px] font-medium text-[#A1A1AA] transition-colors hover:text-white px-2 py-1 rounded-md hover:bg-white/[0.04]">
                   Login
                 </Link>
-                <Link href="/auth/signup">
-                  <Button size="sm" className="h-7 rounded-md px-3 text-[13px] font-medium bg-white text-black hover:bg-neutral-200 shadow-none">
-                    Sign Up
-                  </Button>
+                <Link href="/auth/signup" className="text-[13px] font-medium text-[#A1A1AA] transition-colors hover:text-white px-2 py-1 rounded-md hover:bg-white/[0.04]">
+                  Sign Up
                 </Link>
               </div>
             )}
