@@ -2,9 +2,18 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateVerificationToken, hashToken } from '@/lib/tokens';
 import { sendPasswordResetEmail } from '@/lib/mailer';
+import { rateLimit, getIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getIp(request);
+    // Stricter rate limit for forgot password: 3 requests per minute per IP
+    const { success, retryAfter } = rateLimit(`forgot-password:${ip}`, 3, 60000); 
+
+    if (!success) {
+      return NextResponse.json({ error: `Too many requests. Please try again in ${retryAfter} seconds.` }, { status: 429 });
+    }
+
     const { email } = await request.json();
 
     if (!email) {

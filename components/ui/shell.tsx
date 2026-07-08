@@ -6,7 +6,7 @@ import { ReactNode, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut, User as UserIcon, PenTool } from 'lucide-react';
+import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut, User as UserIcon, PenTool, Hash, Plus, ChevronDown, CheckCircle2, Circle, Clock4 } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 
 interface ShellProps {
@@ -16,12 +16,16 @@ interface ShellProps {
   actions?: ReactNode;
 }
 
-const navItems = [
+const navWorkspace = [
   { href: '/dashboard/profile', label: 'Profile', icon: UserIcon },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+];
+
+const navYourTeams = [
+  { href: '/dashboard', label: 'All Issues', icon: Hash },
   { href: '/dashboard/saved-tools', label: 'Saved Tools', icon: PenTool },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { href: '/dashboard/history', label: 'History', icon: Clock },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Shell({ children, title, description, actions }: ShellProps) {
@@ -30,7 +34,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen w-full bg-background selection:bg-violet-500/30">
+    <div className="flex min-h-screen w-full bg-[#0d0d0d] selection:bg-[#5e6ad2]/30">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -39,67 +43,105 @@ export function Shell({ children, title, description, actions }: ShellProps) {
         />
       )}
 
-      {/* Fixed Left Sidebar */}
+      {/* Fixed Left Sidebar - Linear Style */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/[0.08] bg-black transition-transform duration-200 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r border-white/[0.06] bg-[#111111] transition-transform duration-200 ease-in-out lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex h-14 shrink-0 items-center justify-between px-6">
-          <div className="flex items-center">
-            <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-white font-bold text-black text-[10px]">
+        <div className="flex h-12 shrink-0 items-center justify-between px-4 mt-2">
+          <div className="flex items-center group cursor-pointer rounded-md hover:bg-white/[0.04] px-1.5 py-1 -ml-1.5 transition-colors">
+            <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-[#5e6ad2] font-bold text-white text-[10px]">
               S
             </div>
-            <span className="ml-3 text-sm font-medium tracking-tight text-white">The AI Signal</span>
+            <span className="ml-2.5 text-[13px] font-semibold tracking-tight text-[#e8e8e8]">The AI Signal</span>
+            <ChevronDown className="ml-2 h-3.5 w-3.5 text-[#8A8F98] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 lg:hidden text-muted-foreground hover:text-white" 
+            className="h-8 w-8 lg:hidden text-[#8A8F98] hover:text-white" 
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto space-y-[2px] px-3 py-4">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  'group flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] font-medium transition-all duration-200 ease',
-                  isActive
-                    ? 'bg-white/[0.06] text-white'
-                    : 'text-white/60 hover:bg-white/[0.03] hover:text-white'
-                )}
-              >
-                <item.icon className={cn("h-4 w-4 transition-colors", isActive ? "text-white" : "text-[#8A8F98] group-hover:text-[#EFEFEF]")} />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto pt-2">
+          {/* Workspace Section */}
+          <div className="mb-6">
+            <div className="px-5 mb-1.5 flex items-center justify-between">
+              <p className="text-[10px] font-semibold tracking-widest text-[#8A8F98] uppercase">Workspace</p>
+            </div>
+            <div className="space-y-[1px] px-2">
+              {navWorkspace.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      'group flex items-center gap-3 rounded-md px-3 py-[5px] text-[13px] transition-colors duration-150 ease-out',
+                      isActive
+                        ? 'bg-white/[0.06] text-white font-medium'
+                        : 'text-[#a1a1aa] hover:bg-white/[0.04] hover:text-[#e8e8e8] font-medium'
+                    )}
+                  >
+                    <item.icon className={cn("h-[14px] w-[14px]", isActive ? "text-white" : "text-[#8A8F98] group-hover:text-[#a1a1aa]")} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Your Teams Section */}
+          <div className="mb-6">
+            <div className="px-5 mb-1.5 flex items-center justify-between group cursor-pointer">
+              <p className="text-[10px] font-semibold tracking-widest text-[#8A8F98] uppercase group-hover:text-[#a1a1aa] transition-colors">Your Teams</p>
+              <Plus className="h-3.5 w-3.5 text-[#8A8F98] opacity-0 group-hover:opacity-100 transition-opacity hover:text-white" />
+            </div>
+            <div className="space-y-[1px] px-2">
+              {navYourTeams.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      'group flex items-center gap-3 rounded-md px-3 py-[5px] text-[13px] transition-colors duration-150 ease-out',
+                      isActive
+                        ? 'bg-white/[0.06] text-white font-medium'
+                        : 'text-[#a1a1aa] hover:bg-white/[0.04] hover:text-[#e8e8e8] font-medium'
+                    )}
+                  >
+                    <item.icon className={cn("h-[14px] w-[14px]", isActive ? "text-white" : "text-[#8A8F98] group-hover:text-[#a1a1aa]")} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </nav>
 
         {user ? (
-          <div className="border-t border-border p-4 flex flex-col gap-2 shrink-0">
-            <div className="flex items-center gap-3 px-2 py-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
+          <div className="p-3 shrink-0">
+            <div className="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-white/[0.04] transition-colors cursor-pointer mb-1 group">
+              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-[10px] font-medium text-white overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(user.email || user.name || 'user')}`} alt="Avatar" className="h-full w-full object-cover" />
               </div>
               <div className="flex flex-1 flex-col overflow-hidden">
-                <span className="truncate text-[13px] font-medium text-white">{user.name || 'User'}</span>
+                <span className="truncate text-[13px] font-medium text-[#e8e8e8] group-hover:text-white">{user.name || 'User'}</span>
               </div>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="w-full justify-start h-8 px-2 text-[12px] text-[#8A8F98] hover:text-white hover:bg-neutral-800/20"
+              className="w-full justify-start h-7 px-2 text-[12px] text-[#8A8F98] hover:text-white hover:bg-white/[0.04] rounded-md transition-colors"
               onClick={() => signOut({ callbackUrl: '/auth/signin' })}
             >
               <LogOut className="mr-2 h-3.5 w-3.5" />
@@ -107,14 +149,14 @@ export function Shell({ children, title, description, actions }: ShellProps) {
             </Button>
           </div>
         ) : (
-          <div className="border-t border-border p-4 flex flex-col gap-2 shrink-0 lg:hidden">
+          <div className="p-3 shrink-0 lg:hidden space-y-2">
              <Link href="/auth/signin" className="w-full">
-                <Button variant="ghost" size="sm" className="w-full justify-start h-8 px-2 text-[13px] font-medium text-[#A1A1AA] hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start h-8 rounded-md px-2 text-[13px] font-medium text-[#A1A1AA] hover:text-white hover:bg-white/[0.04]" onClick={() => setIsMobileMenuOpen(false)}>
                   Login
                 </Button>
               </Link>
               <Link href="/auth/signup" className="w-full">
-                <Button size="sm" variant="secondary" className="w-full h-8 rounded-full px-4 text-[13px] font-medium shadow-none" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button size="sm" className="w-full h-8 rounded-md px-4 text-[13px] font-medium bg-[#5e6ad2] hover:bg-[#5e6ad2]/90 text-white shadow-none" onClick={() => setIsMobileMenuOpen(false)}>
                   Sign Up
                 </Button>
               </Link>
@@ -123,35 +165,36 @@ export function Shell({ children, title, description, actions }: ShellProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex flex-1 flex-col lg:pl-64">
-        {/* Top Header */}
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] bg-black/70 px-6 backdrop-blur-md">
+      <main className="flex flex-1 flex-col lg:pl-60">
+        {/* Top Header - Blended */}
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between bg-[#0d0d0d] px-6">
           <div className="flex items-center gap-4 lg:hidden">
-            <Button variant="secondary" size="icon" className="shrink-0 rounded-full" onClick={() => setIsMobileMenuOpen(true)}>
+            <Button variant="ghost" size="icon" className="shrink-0 rounded-md text-[#8A8F98]" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="h-4 w-4" />
               <span className="sr-only">Toggle menu</span>
             </Button>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 font-bold text-white shadow-lg shadow-violet-900/20">
-              S
-            </div>
           </div>
           
-          <div className="flex flex-1 items-center justify-end gap-4">
-            <div className="relative w-full max-w-md hidden lg:block">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="flex flex-1 items-center justify-start lg:justify-end gap-4">
+            <div className="relative w-full max-w-sm hidden lg:block group">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8A8F98] group-focus-within:text-[#5e6ad2] transition-colors" />
               <input
                 type="text"
-                placeholder="Search tools, categories, tags..."
-                className="h-9 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm text-white placeholder:text-muted-foreground focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
+                placeholder="Search..."
+                className="h-7 w-full rounded-md border border-white/[0.06] bg-[#161618] pl-8 pr-3 text-[13px] text-white placeholder:text-[#8A8F98] focus:border-[#5e6ad2]/50 focus:bg-[#1a1a1c] focus:outline-none focus:ring-1 focus:ring-[#5e6ad2]/30 transition-all shadow-sm"
               />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                <kbd className="inline-flex h-4 items-center gap-1 rounded bg-white/[0.05] px-1.5 font-mono text-[9px] font-medium text-[#8A8F98]">⌘</kbd>
+                <kbd className="inline-flex h-4 items-center gap-1 rounded bg-white/[0.05] px-1.5 font-mono text-[9px] font-medium text-[#8A8F98]">K</kbd>
+              </div>
             </div>
             {!user && (
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Link href="/auth/signin" className="text-sm font-medium text-[#A1A1AA] transition-colors hover:text-white px-2">
+              <div className="flex items-center gap-2">
+                <Link href="/auth/signin" className="text-[13px] font-medium text-[#A1A1AA] transition-colors hover:text-white px-2 py-1 rounded-md hover:bg-white/[0.04]">
                   Login
                 </Link>
                 <Link href="/auth/signup">
-                  <Button size="sm" variant="secondary" className="h-8 rounded-full px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium shadow-none">
+                  <Button size="sm" className="h-7 rounded-md px-3 text-[13px] font-medium bg-white text-black hover:bg-neutral-200 shadow-none">
                     Sign Up
                   </Button>
                 </Link>
@@ -161,12 +204,12 @@ export function Shell({ children, title, description, actions }: ShellProps) {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 p-6 sm:p-8 lg:p-10 max-w-[1100px] mx-auto w-full animate-fade-in-up">
+        <div className="flex-1 p-6 sm:p-8 max-w-[1100px] mx-auto w-full animate-fade-in-up">
           {(title || description || actions) && (
-            <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div>
-                {title && <h1 className="text-2xl font-semibold text-white tracking-tight">{title}</h1>}
-                {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+                {title && <h1 className="text-[20px] font-semibold text-white tracking-tight leading-none">{title}</h1>}
+                {description && <p className="mt-2 text-[13px] text-[#a1a1aa]">{description}</p>}
               </div>
               {actions && <div className="flex shrink-0 gap-3">{actions}</div>}
             </div>

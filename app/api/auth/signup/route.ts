@@ -3,9 +3,17 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { generateVerificationToken, hashToken } from '@/lib/tokens';
 import { sendVerificationLinkEmail } from '@/lib/mailer';
+import { rateLimit, getIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getIp(request);
+    const { success, retryAfter } = rateLimit(`signup:${ip}`, 5, 60000); // 5 requests per minute per IP
+
+    if (!success) {
+      return NextResponse.json({ error: `Too many requests. Please try again in ${retryAfter} seconds.` }, { status: 429 });
+    }
+
     const { email, password, name } = await request.json();
 
     if (!email || !password) {
