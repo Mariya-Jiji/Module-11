@@ -14,11 +14,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Too many requests. Please try again in ${retryAfter} seconds.` }, { status: 429 });
     }
 
-    const { email, password, name } = await request.json();
+    let { email, password, name } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
     }
+
+    email = email.trim().toLowerCase();
 
     // 1. Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });

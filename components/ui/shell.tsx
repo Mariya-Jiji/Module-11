@@ -22,7 +22,6 @@ const navWorkspace = [
 ];
 
 const navYourTeams = [
-  { href: '/dashboard', label: 'All Issues', icon: Hash },
   { href: '/dashboard/saved-tools', label: 'Saved Tools', icon: PenTool },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { href: '/dashboard/history', label: 'History', icon: Clock },
@@ -70,10 +69,7 @@ export function Shell({ children, title, description, actions }: ShellProps) {
 
         <nav className="flex-1 overflow-y-auto pt-2">
           {/* Workspace Section */}
-          <div className="mb-6">
-            <div className="px-5 mb-1.5 flex items-center justify-between">
-              <p className="text-[10px] font-semibold tracking-widest text-[#8A8F98] uppercase">Workspace</p>
-            </div>
+          <div className="mb-2">
             <div className="space-y-[1px] px-2">
               {navWorkspace.map((item) => {
                 const isActive = pathname === item.href;
@@ -99,10 +95,6 @@ export function Shell({ children, title, description, actions }: ShellProps) {
 
           {/* Your Teams Section */}
           <div className="mb-6">
-            <div className="px-5 mb-1.5 flex items-center justify-between group cursor-pointer">
-              <p className="text-[10px] font-semibold tracking-widest text-[#8A8F98] uppercase group-hover:text-[#a1a1aa] transition-colors">Your Teams</p>
-              <Plus className="h-3.5 w-3.5 text-[#8A8F98] opacity-0 group-hover:opacity-100 transition-opacity hover:text-white" />
-            </div>
             <div className="space-y-[1px] px-2">
               {navYourTeams.map((item) => {
                 const isActive = pathname === item.href;

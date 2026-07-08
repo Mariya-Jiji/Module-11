@@ -5,11 +5,13 @@ import { hashToken } from '@/lib/tokens';
 
 export async function POST(request: Request) {
   try {
-    const { email, token, newPassword } = await request.json();
+    let { email, token, newPassword } = await request.json();
 
     if (!email || !token || !newPassword) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
+
+    email = email.trim().toLowerCase();
 
     const identifier = `reset:${email}`;
     const hashedToken = hashToken(token);
