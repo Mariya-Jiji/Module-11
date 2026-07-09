@@ -11,33 +11,34 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 function VerifyEmailForm() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
-
+  const [token, setToken] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Verifying your email...');
   const initialized = useRef(false);
-  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+    // Read directly from window to bypass Next.js hydration delays
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    const urlEmail = params.get('email');
 
-  useEffect(() => {
-    if (!token || !email) {
-      if (isReady) {
+    setToken(urlToken);
+    setEmail(urlEmail);
+
+    if (!urlToken || !urlEmail) {
+      // Small delay just to prevent a flash if browser is slow, but window.location is synchronous
+      const timer = setTimeout(() => {
         setStatus('error');
         setMessage('Missing or invalid verification link.');
-      }
-      return;
+      }, 500);
+      return () => clearTimeout(timer);
     }
 
     if (initialized.current) return;
     initialized.current = true;
 
-    verifyEmailAction(token, email)
+    verifyEmailAction(urlToken, urlEmail)
       .then((res) => {
          if (res?.error) {
             setStatus('error');
@@ -53,7 +54,7 @@ function VerifyEmailForm() {
          setStatus('error');
          setMessage('An unexpected error occurred.');
       });
-  }, [token, email, isReady]);
+  }, []);
 
   return (
     <div className="w-full max-w-md animate-fade-in-up">
