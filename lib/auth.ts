@@ -5,6 +5,8 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { authConfig } from '@/lib/auth.config';
 
+export const BYPASS_SECRET = process.env.AUTH_SECRET || 'development-secret-change-me';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
@@ -37,7 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user) return null;
 
         // Secret bypass for automatic login after email verification
-        if (credentials.bypassSecret && credentials.bypassSecret === process.env.AUTH_SECRET) {
+        if (credentials.bypassSecret && credentials.bypassSecret === BYPASS_SECRET) {
           if (!user.emailVerified) return null;
           return {
             id: user.id,

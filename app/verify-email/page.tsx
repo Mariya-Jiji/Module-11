@@ -20,14 +20,20 @@ function VerifyEmailForm() {
   const initialized = useRef(false);
 
   useEffect(() => {
+    // Wait until token and email are available
+    if (!token || !email) {
+      // If we've been mounted for a while and still no token, it's actually missing
+      const timer = setTimeout(() => {
+        if (!token || !email) {
+          setStatus('error');
+          setMessage('Missing or invalid verification link.');
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+
     if (initialized.current) return;
     initialized.current = true;
-    
-    if (!token || !email) {
-      setStatus('error');
-      setMessage('Missing or invalid verification link.');
-      return;
-    }
 
     verifyEmailAction(token, email)
       .then((res) => {

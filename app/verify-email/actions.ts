@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { hashToken } from '@/lib/tokens';
-import { signIn } from '@/lib/auth';
+import { signIn, BYPASS_SECRET } from '@/lib/auth';
 
 export async function verifyEmailAction(token: string, email: string) {
   try {
@@ -41,7 +41,7 @@ export async function verifyEmailAction(token: string, email: string) {
   // Sign in and redirect (this throws a redirect error which Next.js handles)
   await signIn('credentials', {
     email,
-    bypassSecret: process.env.AUTH_SECRET,
+    bypassSecret: BYPASS_SECRET,
     redirectTo: '/',
   });
 }
