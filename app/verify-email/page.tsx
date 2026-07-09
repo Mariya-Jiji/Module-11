@@ -11,34 +11,34 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 function VerifyEmailForm() {
-  const [token, setToken] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
+
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Verifying your email...');
   const initialized = useRef(false);
 
+  // 1. Give Next.js up to 3 seconds to fully hydrate the URL parameters
   useEffect(() => {
-    // Read directly from window to bypass Next.js hydration delays
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
-    const urlEmail = params.get('email');
+    if (token && email) return; // if they are here, we don't need the fallback error
+    
+    const fallbackTimer = setTimeout(() => {
+      setStatus('error');
+      setMessage('Missing or invalid verification link.');
+    }, 3000);
+    
+    return () => clearTimeout(fallbackTimer);
+  }, [token, email]);
 
-    setToken(urlToken);
-    setEmail(urlEmail);
-
-    if (!urlToken || !urlEmail) {
-      // Small delay just to prevent a flash if browser is slow, but window.location is synchronous
-      const timer = setTimeout(() => {
-        setStatus('error');
-        setMessage('Missing or invalid verification link.');
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-
+  // 2. Trigger the action the moment the parameters are available
+  useEffect(() => {
+    if (!token || !email) return; // Wait for hydration
     if (initialized.current) return;
+    
     initialized.current = true;
 
-    verifyEmailAction(urlToken, urlEmail)
+    verifyEmailAction(token, email)
       .then((res) => {
          if (res?.error) {
             setStatus('error');
@@ -54,7 +54,7 @@ function VerifyEmailForm() {
          setStatus('error');
          setMessage('An unexpected error occurred.');
       });
-  }, []);
+  }, [token, email]);
 
   return (
     <div className="w-full max-w-md animate-fade-in-up">
