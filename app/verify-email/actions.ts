@@ -38,10 +38,20 @@ export async function verifyEmailAction(token: string, email: string) {
     return { error: 'An unexpected error occurred during verification.' };
   }
 
-  // Sign in and redirect (this throws a redirect error which Next.js handles)
-  await signIn('credentials', {
-    email,
-    bypassSecret: BYPASS_SECRET,
-    redirectTo: '/',
-  });
+  // Sign in without redirecting on the server, to prevent cookie loss during Next.js routing
+  try {
+    await signIn('credentials', {
+      email,
+      bypassSecret: BYPASS_SECRET,
+      redirect: false,
+    });
+  } catch (error: any) {
+    if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.startsWith('NEXT_REDIRECT')) {
+      // Ignore redirect if it still throws
+    } else {
+      console.error('SignIn error during verify:', error);
+    }
+  }
+
+  return { success: true };
 }

@@ -40,6 +40,9 @@ function VerifyEmailForm() {
          if (res?.error) {
             setStatus('error');
             setMessage(res.error);
+         } else if (res?.success) {
+            // Hard redirect ensures the cookie is applied immediately
+            window.location.href = '/';
          }
       })
       .catch((error) => {
