@@ -18,18 +18,20 @@ function VerifyEmailForm() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Verifying your email...');
   const initialized = useRef(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Wait until token and email are available
+    const timer = setTimeout(() => setIsReady(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (!token || !email) {
-      // If we've been mounted for a while and still no token, it's actually missing
-      const timer = setTimeout(() => {
-        if (!token || !email) {
-          setStatus('error');
-          setMessage('Missing or invalid verification link.');
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
+      if (isReady) {
+        setStatus('error');
+        setMessage('Missing or invalid verification link.');
+      }
+      return;
     }
 
     if (initialized.current) return;
@@ -41,19 +43,17 @@ function VerifyEmailForm() {
             setStatus('error');
             setMessage(res.error);
          } else if (res?.success) {
-            // Hard redirect ensures the cookie is applied immediately
             window.location.href = '/';
          }
       })
       .catch((error) => {
-         // Allow Next.js redirect to bubble up
          if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.startsWith('NEXT_REDIRECT')) {
            throw error;
          }
          setStatus('error');
          setMessage('An unexpected error occurred.');
       });
-  }, [token, email]);
+  }, [token, email, isReady]);
 
   return (
     <div className="w-full max-w-md animate-fade-in-up">
