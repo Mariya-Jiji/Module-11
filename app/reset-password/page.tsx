@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,7 +17,20 @@ function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const [isReady, setIsReady] = useState(false);
+
+  // Wait for hydration of query params
+  useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (!token || !email) {
+    if (!isReady) {
+      return (
+        <Card title="Loading..." description="Please wait" className="w-full max-w-md text-center" />
+      );
+    }
     return (
       <Card title="Invalid Link" description="Missing token or email parameter." className="w-full max-w-md text-center">
         <Button onClick={() => router.push('/auth/signin')} className="w-full mt-4">Go to Sign In</Button>

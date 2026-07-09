@@ -42,7 +42,11 @@ function VerifyEmailForm() {
             setMessage(res.error);
          }
       })
-      .catch(() => {
+      .catch((error) => {
+         // Allow Next.js redirect to bubble up
+         if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.startsWith('NEXT_REDIRECT')) {
+           throw error;
+         }
          setStatus('error');
          setMessage('An unexpected error occurred.');
       });
