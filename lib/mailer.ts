@@ -20,7 +20,8 @@ export async function sendVerificationLinkEmail(email: string, token: string) {
   const mailOptions = {
     from: `"The AI Signal" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: 'Verify your email - The AI Signal',
+    subject: 'Verify your email address',
+    text: `Thanks for signing up for The AI Signal!\n\nPlease verify your email address by copying and pasting the following link into your browser:\n${confirmLink}\n\nThis link will expire in 1 hour. If you didn't request this email, you can safely ignore it.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
         <h2 style="color: #111;">Verify your email address</h2>
@@ -55,6 +56,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     from: `"The AI Signal" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: 'Reset your password - The AI Signal',
+    text: `You requested a password reset.\n\nPlease set a new password by copying and pasting the following link into your browser:\n${resetLink}\n\nThis link will expire in 1 hour. If you didn't request this email, you can safely ignore it.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
         <h2 style="color: #111;">Reset your password</h2>
