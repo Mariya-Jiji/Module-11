@@ -14,7 +14,7 @@ export async function auth() {
     if (!res.ok) return null;
     
     const data = await res.json();
-    return { user: data.user };
+    return { user: data.user, token };
   } catch {
     return null;
   }

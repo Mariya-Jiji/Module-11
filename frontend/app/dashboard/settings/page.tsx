@@ -2,7 +2,6 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { Shell } from '@/components/ui/shell';
 import { SettingsClient } from '@/components/settings-client';
-import { prisma } from '@/lib/prisma';
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -11,13 +10,21 @@ export default async function SettingsPage() {
     redirect('/auth/signin');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: { accounts: true },
-  });
+  let connectedProviders: string[] = [];
+  let hasPassword = true;
 
-  const connectedProviders = user?.accounts.map((acc) => acc.provider) || [];
-  const hasPassword = !!user?.password;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'}/api/user/settings`, {
+      headers: { Cookie: `auth_token=${session.token}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      connectedProviders = data.connectedProviders || [];
+      hasPassword = data.hasPassword ?? true;
+    }
+  } catch (e) {
+    // fail silently
+  }
 
   return (
     <Shell 

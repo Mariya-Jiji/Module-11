@@ -3,18 +3,21 @@ import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Shell } from '@/components/ui/shell';
-import { prisma } from '@/lib/prisma';
 import { formatDistanceToNow } from 'date-fns';
 
 export default async function HistoryPage() {
   const session = await auth();
   if (!session?.user) redirect('/auth/signin');
 
-  const history = await prisma.history.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-  });
+  let history: any[] = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'}/api/user/history`, {
+      headers: { Cookie: `auth_token=${session.token}` }
+    });
+    if (res.ok) history = await res.json();
+  } catch (e) {
+    // silently fail and show empty history
+  }
 
   return (
     <Shell title="History" description="A timeline of your recent activity." actions={null}>
