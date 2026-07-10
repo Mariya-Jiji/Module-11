@@ -67,8 +67,9 @@ function SignUpForm() {
   }
 
   const handleOAuth = (provider: 'google' | 'github') => {
-    // Note: OAuth needs to be implemented via backend redirect now
-    setError('OAuth is temporarily disabled while we upgrade our systems.');
+    if (provider === 'google') setIsLoadingGoogle(true);
+    if (provider === 'github') setIsLoadingGithub(true);
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'}/api/auth/${provider}`;
   };
 
   if (success) {

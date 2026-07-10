@@ -305,4 +305,192 @@ auth.post('/forgot-password', async (c) => {
   }
 })
 
+// --- GOOGLE OAUTH ---
+auth.get('/google', (c) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  if (!clientId) return c.json({ error: 'Google OAuth not configured' }, 500)
+  
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8787'
+  const redirectUri = `${backendUrl}/api/auth/google/callback`
+  const scope = 'email profile'
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`
+  
+  return c.redirect(authUrl)
+})
+
+auth.get('/google/callback', async (c) => {
+  const code = c.req.query('code')
+  const error = c.req.query('error')
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+
+  if (error || !code) {
+    return c.redirect(`${frontendUrl}/auth/signin?error=OAuthFailed`)
+  }
+
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8787'
+  const redirectUri = `${backendUrl}/api/auth/google/callback`
+
+  try {
+    // Exchange code for token
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: clientId!,
+        client_secret: clientSecret!,
+        code,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+      })
+    })
+    
+    if (!tokenRes.ok) throw new Error('Failed to get token')
+    const tokenData = await tokenRes.json()
+
+    // Get user info
+    const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` }
+    })
+    
+    if (!userRes.ok) throw new Error('Failed to get user info')
+    const userData = await userRes.json()
+
+    const email = userData.email.toLowerCase()
+    
+    let user = await prisma.user.findUnique({ where: { email } })
+    
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: userData.name,
+          image: userData.picture,
+          emailVerified: new Date(),
+        }
+      })
+    }
+
+    // Set Cookie
+    const jwtToken = sign({ id: user.id, email: user.email, name: user.name }, process.env.JWT_SECRET!, { expiresIn: '7d' })
+    setCookie(c, 'auth_token', jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7
+    })
+
+    return c.redirect(`${frontendUrl}/dashboard`)
+  } catch (err) {
+    console.error('Google OAuth Error:', err)
+    return c.redirect(`${frontendUrl}/auth/signin?error=OAuthFailed`)
+  }
+})
+
+// --- GITHUB OAUTH ---
+auth.get('/github', (c) => {
+  const clientId = process.env.GITHUB_CLIENT_ID
+  if (!clientId) return c.json({ error: 'Github OAuth not configured' }, 500)
+  
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8787'
+  const redirectUri = `${backendUrl}/api/auth/github/callback`
+  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email`
+  
+  return c.redirect(authUrl)
+})
+
+auth.get('/github/callback', async (c) => {
+  const code = c.req.query('code')
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+
+  if (!code) {
+    return c.redirect(`${frontendUrl}/auth/signin?error=OAuthFailed`)
+  }
+
+  const clientId = process.env.GITHUB_CLIENT_ID
+  const clientSecret = process.env.GITHUB_CLIENT_SECRET
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8787'
+  const redirectUri = `${backendUrl}/api/auth/github/callback`
+
+  try {
+    // Exchange code for token
+    const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        redirect_uri: redirectUri
+      })
+    })
+    
+    if (!tokenRes.ok) throw new Error('Failed to get github token')
+    const tokenData = await tokenRes.json()
+    
+    if (tokenData.error) throw new Error(tokenData.error)
+
+    // Get user info
+    const userRes = await fetch('https://api.github.com/user', {
+      headers: { 
+        Authorization: `Bearer ${tokenData.access_token}`,
+        'User-Agent': 'The-AI-Signal-App'
+      }
+    })
+    
+    if (!userRes.ok) throw new Error('Failed to get github user info')
+    const userData = await userRes.json()
+
+    // Get user email
+    let email = userData.email
+    if (!email) {
+      const emailRes = await fetch('https://api.github.com/user/emails', {
+        headers: { 
+          Authorization: `Bearer ${tokenData.access_token}`,
+          'User-Agent': 'The-AI-Signal-App'
+        }
+      })
+      const emailsData = await emailRes.json()
+      const primaryEmail = emailsData.find((e: any) => e.primary)
+      if (primaryEmail) email = primaryEmail.email
+    }
+
+    if (!email) throw new Error('No email found in Github account')
+    email = email.toLowerCase()
+
+    let user = await prisma.user.findUnique({ where: { email } })
+    
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: userData.name || userData.login,
+          image: userData.avatar_url,
+          emailVerified: new Date(),
+        }
+      })
+    }
+
+    // Set Cookie
+    const jwtToken = sign({ id: user.id, email: user.email, name: user.name }, process.env.JWT_SECRET!, { expiresIn: '7d' })
+    setCookie(c, 'auth_token', jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7
+    })
+
+    return c.redirect(`${frontendUrl}/dashboard`)
+  } catch (err) {
+    console.error('Github OAuth Error:', err)
+    return c.redirect(`${frontendUrl}/auth/signin?error=OAuthFailed`)
+  }
+})
+
 export default auth
