@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,21 +25,31 @@ function SignInForm() {
     event.preventDefault();
     setIsLoadingCredentials(true);
     setError(null);
-    const result = await signIn('credentials', { redirect: false, email, password });
-    setIsLoadingCredentials(false);
-
-    if (result?.error) {
-      setError('Invalid email or password.');
-    } else {
-      window.location.href = '/';
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || 'Invalid email or password.');
+      } else {
+        window.location.href = '/dashboard';
+      }
+    } catch {
+      setError('An error occurred during sign in.');
+    } finally {
+      setIsLoadingCredentials(false);
     }
   }
 
   const handleOAuth = (provider: 'google' | 'github') => {
-    setError(null);
-    if (provider === 'google') setIsLoadingGoogle(true);
-    if (provider === 'github') setIsLoadingGithub(true);
-    signIn(provider, { callbackUrl: '/' });
+    // Note: OAuth needs to be implemented via backend redirect now
+    setError('OAuth is temporarily disabled while we upgrade our systems.');
   };
 
   return (

@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -68,10 +67,8 @@ function SignUpForm() {
   }
 
   const handleOAuth = (provider: 'google' | 'github') => {
-    setError(null);
-    if (provider === 'google') setIsLoadingGoogle(true);
-    if (provider === 'github') setIsLoadingGithub(true);
-    signIn(provider, { callbackUrl: '/' });
+    // Note: OAuth needs to be implemented via backend redirect now
+    setError('OAuth is temporarily disabled while we upgrade our systems.');
   };
 
   if (success) {

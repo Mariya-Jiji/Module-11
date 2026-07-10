@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Compass, Bookmark, Clock, Settings, Search, Menu, X, LogOut, User as UserIcon, PenTool, Hash, Plus, ChevronDown, CheckCircle2, Circle, Clock4 } from 'lucide-react';
