@@ -24,7 +24,7 @@ export function ProfileClient() {
       return res.json();
     },
     onSuccess: async () => {
-      await update({ name });
+      await update();
       toast.success('Profile updated successfully');
     },
     onError: () => {
