@@ -109,7 +109,7 @@ auth.post('/login', async (c) => {
     setCookie(c, 'auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7 // 7 days
     })
@@ -123,7 +123,11 @@ auth.post('/login', async (c) => {
 
 // --- LOGOUT ---
 auth.post('/logout', async (c) => {
-  deleteCookie(c, 'auth_token', { path: '/' })
+  deleteCookie(c, 'auth_token', { 
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+  })
   return c.json({ success: true, message: 'Logged out successfully.' })
 })
 
@@ -191,7 +195,7 @@ auth.post('/verify-email', async (c) => {
     setCookie(c, 'auth_token', jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7 // 7 days
     })
