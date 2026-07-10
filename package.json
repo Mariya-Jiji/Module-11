@@ -1,0 +1,10 @@
+{
+  "name": "fullstack-app",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"cd backend && npx tsx src/index.ts\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
