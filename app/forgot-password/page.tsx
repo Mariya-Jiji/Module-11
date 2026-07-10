@@ -6,12 +6,32 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { MailCheck } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+
+  async function handleResendResetEmail() {
+    setResendLoading(true);
+    const response = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    
+    const data = await response.json().catch(() => ({}));
+    setResendLoading(false);
+    
+    if (!response.ok) {
+      toast.error(data.error || 'Failed to resend email.');
+    } else {
+      toast.success(data.message || 'Password reset email resent!');
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,7 +64,15 @@ export default function ForgotPasswordPage() {
             <p className="text-xs text-[#a1a1aa] italic">
               Check your spam folder if you didn&apos;t receive the reset link.
             </p>
-            <Link href="/auth/signin" className="w-full mt-4 block">
+            <Button 
+              variant="secondary"
+              onClick={handleResendResetEmail} 
+              className="w-full mt-4 relative"
+              disabled={resendLoading}
+            >
+              {resendLoading ? 'Sending...' : 'Resend Email'}
+            </Button>
+            <Link href="/auth/signin" className="w-full mt-2 block">
               <Button className="w-full">Return to Sign In</Button>
             </Link>
           </div>

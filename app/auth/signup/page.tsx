@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { MailCheck } from 'lucide-react';
+import { toast } from 'sonner';
 
 function SignUpForm() {
   const router = useRouter();
@@ -23,6 +24,25 @@ function SignUpForm() {
 
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGithub, setIsLoadingGithub] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+
+  async function handleResendVerification() {
+    setResendLoading(true);
+    const response = await fetch('/api/auth/resend-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email }),
+    });
+    
+    const data = await response.json().catch(() => ({}));
+    setResendLoading(false);
+    
+    if (!response.ok) {
+      toast.error(data.error || 'Failed to resend email.');
+    } else {
+      toast.success(data.message || 'Verification email resent!');
+    }
+  }
 
   async function handleSignup(event: React.FormEvent) {
     event.preventDefault();
@@ -69,7 +89,15 @@ function SignUpForm() {
           <p className="text-xs text-[#a1a1aa] italic">
             Check your spam folder if you didn&apos;t receive the verification link.
           </p>
-          <Button onClick={() => router.push('/auth/signin')} className="w-full mt-4">
+          <Button 
+            variant="secondary"
+            onClick={handleResendVerification} 
+            className="w-full mt-2 relative"
+            disabled={resendLoading}
+          >
+            {resendLoading ? 'Sending...' : 'Resend Email'}
+          </Button>
+          <Button onClick={() => router.push('/auth/signin')} className="w-full mt-2">
             Go to Sign In
           </Button>
         </div>
